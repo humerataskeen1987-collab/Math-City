@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scan the Math City</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#20a8ee,#d8f4ff);min-height:100vh;color:#172554;overflow-x:hidden}
+header{text-align:center;padding:20px 10px 8px}
+h1{display:inline-block;margin:0;background:#ff7f32;color:white;border:4px solid #6b2b1a;border-radius:22px;padding:12px 28px;font-size:clamp(25px,5vw,48px);text-shadow:2px 2px #8b3518}
+.subtitle{margin:14px auto;background:white;border-radius:18px;padding:12px 20px;max-width:700px;font-weight:bold;font-size:18px;box-shadow:0 4px 12px #0002}
+.city{display:flex;align-items:flex-end;justify-content:center;gap:28px;padding:25px 20px 0;min-height:410px;position:relative}
+.building{width:150px;border-radius:15px 15px 0 0;color:#fff;text-align:center;padding:15px 10px 18px;cursor:pointer;box-shadow:0 8px 0 #0002;transition:.25s;position:relative;overflow:hidden}
+.building:hover{transform:translateY(-12px) scale(1.03)}
+.building h2{font-size:16px;margin:0 0 12px}.building p{font-size:18px;font-weight:bold;margin:8px 0}
+.integer{height:280px;background:#164bd5}.fraction{height:230px;background:#f07b38}.algebra{height:205px;background:#e9aa22}.data{height:245px;background:#1554cf}.shapes{height:265px;background:#1242b8}
+.windows{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 8px}.windows span{height:30px;background:#d9f5ffb8;border-radius:5px;color:#164bd5;font-weight:bold;padding-top:5px}
+.road{height:90px;background:#77738f;border-top:8px solid #5e5a72;position:relative}.road:before{content:"";position:absolute;top:35px;left:0;right:0;border-top:5px dashed white}
+.robot{position:absolute;bottom:83px;font-size:72px;animation:drive 8s linear infinite}
+@keyframes drive{from{left:5%}to{left:88%}}
+.cloud{position:absolute;right:7%;top:70px;font-size:55px;animation:float 3s ease-in-out infinite}@keyframes float{50%{transform:translateY(-12px)}}
+.controls{text-align:center;padding:18px 10px 35px;background:#77738f}.btn{border:0;border-radius:20px;padding:13px 22px;margin:5px;background:#ffd34e;color:#493400;font-size:17px;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #b88b00}.btn:active{transform:translateY(3px);box-shadow:none}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:center;justify-content:center;padding:18px}.card{background:white;max-width:620px;width:100%;border-radius:24px;padding:24px;text-align:center;box-shadow:0 15px 50px #0006;animation:pop .25s ease}@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.card h2{margin-top:0;color:#1745b5}.question{background:#eef7ff;border-radius:16px;padding:18px;font-size:22px;font-weight:bold;margin:15px 0}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ans{padding:13px;border:2px solid #b7d8ff;background:#fff;border-radius:13px;font-size:17px;cursor:pointer}.ans:hover{background:#e9f5ff}.feedback{min-height:28px;font-weight:bold;margin:12px}
+.progress{height:12px;background:#ddd;border-radius:10px;overflow:hidden}.bar{height:100%;width:0;background:#2b7cff;transition:.4s}
+@media(max-width:900px){.city{gap:10px}.building{width:18vw}.building h2{font-size:12px}.building p{font-size:14px}.windows span{height:22px;font-size:11px;padding-top:3px}}
+@media(max-width:600px){.city{display:grid;grid-template-columns:1fr 1fr;align-items:end;min-height:auto}.building{width:100%;height:190px}.integer{height:220px}.road{margin-top:0}.robot{display:none}.answers{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>SCAN THE MATH CITY</h1>
+<div class="subtitle">🤖 Welcome to Math City! Click a building to explore and solve a challenge.</div>
+</header>
+<div class="cloud">☁️</div>
+
+<section class="city">
+  <div class="building integer" onclick="openBuilding('Integer Tower')">
+    <h2>INTEGER<br>TOWER</h2>
+    <div class="windows"><span>−2</span><span>+2</span><span>1</span><span>0</span><span>−1</span><span>3</span></div>
+    <p>Number Line</p>
+  </div>
+  <div class="building fraction" onclick="openBuilding('Fraction Café')">
+    <h2>FRACTION<br>CAFÉ</h2><p>🍕</p><p>½ + ¼ = ?</p>
+  </div>
+  <div class="building algebra" onclick="openBuilding('Algebra Lab')">
+    <h2>ALGEBRA<br>LAB</h2><p>🧪</p><p>x + 2 = 5</p>
+  </div>
+  <div class="building data" onclick="openBuilding('Data Centre')">
+    <h2>DATA<br>CENTRE</h2><p>▰ ▰ ▰</p><p>Read the graph!</p>
+  </div>
+  <div class="building shapes" onclick="openBuilding('Shapes Stadium')">
+    <h2>SHAPES<br>STADIUM</h2><p>■ ▲ ●</p><p>Geometry</p>
+  </div>
+  <div class="robot">🤖</div>
+</section>
+<div class="road"></div>
+<section class="controls">
+  <button class="btn" onclick="startTour()">▶ START TOUR</button>
+  <button class="btn" onclick="startQuiz()">🧮 MATH QUIZ</button>
+  <button class="btn" onclick="showQR()">▦ SHOW QR CODES</button>
+</section>
+
+<div class="modal" id="modal">
+ <div class="card">
+  <h2 id="title"></h2><div id="content"></div>
+  <button class="btn" onclick="closeModal()">✕ CLOSE</button>
+ </div>
+</div>
+
+<script>
+const lessons = {
+"Integer Tower": {
+ text:"Integers include positive numbers, negative numbers and zero.",
+ questions:[
+  ["Which is greater?",["−5","−2","−8","−10"],1],
+  ["What is 7 + (−3)?",["3","4","5","10"],1],
+  ["What is 5 − 8?",["3","−3","13","−13"],1]
+ ]},
+
+"Fraction Café": {
+ text:"Fractions show equal parts of a whole.",
+ questions:[
+  ["What is ½ + ¼?",["¾","⅓","⅔","1"],0],
+  ["What is ¾ − ¼?",["¼","½","⅔","1"],1],
+  ["Which fraction is equal to ½?",["2/4","3/4","1/3","2/3"],0]
+ ]},
+
+"Algebra Lab": {
+ text:"Algebra uses letters to represent unknown numbers.",
+ questions:[
+  ["Solve: x + 2 = 5",["2","3","4","7"],1],
+  ["Solve: x − 4 = 6",["2","10","12","−2"],1],
+  ["Solve: 2x = 10",["2","4","5","8"],2]
+ ]},
+
+"Data Centre": {
+ text:"A bar graph helps us compare quantities.",
+ questions:[
+  ["Monday = 4 books and Tuesday = 7 books. Which day has more?",["Monday","Tuesday","Both","Cannot tell"],1],
+  ["A class has 12 boys and 8 girls. How many students?",["18","20","22","24"],1],
+  ["Scores are 5, 8, 6, 8. What is the highest score?",["5","6","7","8"],3]
+ ]},
+
+"Shapes Stadium": {
+ text:"Geometry helps us study shapes, sides and angles.",
+ questions:[
+  ["How many sides does a triangle have?",["2","3","4","5"],1],
+  ["How many sides does a square have?",["3","4","5","6"],1],
+  ["Which shape has no corners?",["Triangle","Square","Circle","Rectangle"],2]
+ ]}
+};
+
+let currentBuilding="";
+let currentQuestion=0;
+let score=0;
+let quizMode=false;
+
+function openBuilding(name){
+ currentBuilding=name;
+ currentQuestion=0;
+ quizMode=false;
+ showBuildingQuestion();
+}
+
+function showBuildingQuestion(){
+ const d=lessons[currentBuilding];
+ const q=d.questions[currentQuestion];
+ document.getElementById("title").textContent="🏙️ "+currentBuilding;
+ document.getElementById("content").innerHTML=
+ `<p>${d.text}</p>
+  <p><b>Question ${currentQuestion+1} of ${d.questions.length}</b></p>
+  <div class="progress"><div class="bar" style="width:${((currentQuestion)/d.questions.length)*100}%"></div></div>
+  <div class="question">${q[0]}</div>
+  <div class="answers">${q[1].map((x,i)=>`<button class="ans" onclick="buildingAnswer(${i})">${x}</button>`).join("")}</div>
+  <div class="feedback" id="feedback"></div>`;
+ document.getElementById("modal").style.display="flex";
+}
+
+function buildingAnswer(i){
+ const q=lessons[currentBuilding].questions[currentQuestion];
+ const f=document.getElementById("feedback");
+ if(i===q[2]){
+   f.textContent="✅ Correct! Great job!";
+   f.style.color="green";
+   setTimeout(()=>{
+     currentQuestion++;
+     if(currentQuestion<lessons[currentBuilding].questions.length){
+       showBuildingQuestion();
+     }else{
+       document.getElementById("title").textContent="🎉 "+currentBuilding+" Complete!";
+       document.getElementById("content").innerHTML=
+       `<h2>🏆 Excellent!</h2><p>You answered all 3 questions.</p>
+        <button class="btn" onclick="closeModal()">BACK TO CITY</button>`;
+     }
+   },650);
+ }else{
+   f.textContent="❌ Try again!";
+   f.style.color="crimson";
+ }
+}
+
+function closeModal(){
+ document.getElementById("modal").style.display="none";
+}
+
+function startTour(){
+ const names=Object.keys(lessons);
+ let i=0;
+ function nextBuilding(){
+   if(i<names.length){
+     currentBuilding=names[i++];
+     currentQuestion=0;
+     quizMode=false;
+     showBuildingQuestion();
+   }else{
+     alert("🎉 Tour complete! You explored all 5 Math City towers.");
+   }
+ }
+ nextBuilding();
+}
+
+function startQuiz(){
+ score=0;
+ currentQuestion=0;
+ quizMode=true;
+ showQuizQuestion();
+}
+
+function showQuizQuestion(){
+ const names=Object.keys(lessons);
+ if(currentQuestion>=names.length){
+   document.getElementById("title").textContent="🏆 Quiz Complete!";
+   document.getElementById("content").innerHTML=`<h2>You scored ${score}/${names.length}</h2><p>⭐ Keep exploring Math City!</p>`;
+   document.getElementById("modal").style.display="flex";
+   return;
+ }
+ currentBuilding=names[currentQuestion];
+ const q=lessons[currentBuilding].questions[0];
+ document.getElementById("title").textContent=`🧠 Quiz ${currentQuestion+1} of ${names.length}`;
+ document.getElementById("content").innerHTML=
+ `<p><b>${currentBuilding}</b></p>
+  <div class="question">${q[0]}</div>
+  <div class="answers">${q[1].map((x,i)=>`<button class="ans" onclick="quizAnswer(${i},${q[2]})">${x}</button>`).join("")}</div>
+  <div class="feedback" id="feedback"></div>`;
+ document.getElementById("modal").style.display="flex";
+}
+
+function quizAnswer(i,c){
+ const f=document.getElementById("feedback");
+ if(i===c){score++;f.textContent="✅ Correct!";f.style.color="green";}
+ else{f.textContent="❌ Not quite!";f.style.color="crimson";}
+ setTimeout(()=>{currentQuestion++;showQuizQuestion();},700);
+}
+
+function showQR(){
+ document.getElementById("title").textContent="▦ Math City Stations";
+ document.getElementById("content").innerHTML=
+ `<p>Choose a station to open its 5-question challenge:</p>
+  <div class="answers">${Object.keys(lessons).map(n=>`<button class="ans" onclick="openBuilding('${n}')">▦ ${n}</button>`).join("")}</div>`;
+ document.getElementById("modal").style.display="flex";
+}
+
+window.onclick=e=>{
+ if(e.target===document.getElementById("modal")) closeModal();
+};
+</script>
+</body>
+</html>
